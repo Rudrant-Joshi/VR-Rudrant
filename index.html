@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Animation</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset everything */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-x: hidden;
+      background: #000;
+      font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+      color: #fff;
+    }
+
+    body {
+      overflow-x: hidden;
+      background: #000;
+    }
+
+    /* Fixed canvases covering the full viewport */
+    .anim-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ===== SECTION 1: Layout overlay on animation 1 ===== */
+    .section-1-overlay {
+      position: relative;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .section-1-overlay * {
+      pointer-events: auto;
+    }
+
+
+
+    /* Header */
+    .site-header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(38,38,38,0.5);
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(0,0,0,0.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand svg {
+      width: 1.75rem;
+      height: 1.75rem;
+      fill: white;
+    }
+
+    .brand span {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .nav-pills {
+      display: none;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    @media (min-width: 768px) {
+      .nav-pills { display: flex; }
+    }
+
+    .nav-pills button {
+      padding: 0.375rem 1rem;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #a3a3a3;
+      background: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: all 0.2s;
+    }
+
+    .nav-pills button:hover {
+      color: #fff;
+      background: rgba(10,10,10,0.8);
+    }
+
+    .header-cta {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid #262626;
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      border-radius: 0.5rem;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .header-cta:hover {
+      border-color: #737373;
+      background: #fff;
+      color: #000;
+    }
+
+    /* Hero Section */
+    .hero {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 90vh;
+    }
+
+    .hero-content {
+      max-width: 48rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      align-items: flex-start;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 4.5rem);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 0.95;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hero h1 .muted {
+      color: #a3a3a3;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s 0.2s ease-out forwards;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      background: #fff;
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 10px 20px rgba(255,255,255,0.05);
+    }
+
+    .btn-primary:hover {
+      background: #e5e5e5;
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      border: 1px solid #262626;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: #737373;
+    }
+
+    /* Cards Grid Section */
+    .cards-section {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 8rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4rem;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 4rem 0;
+    }
+
+    @media (min-width: 1024px) {
+      .cards-grid {
+        grid-template-columns: 5fr 2fr 5fr;
+        gap: 6rem;
+      }
+    }
+
+    .cards-column {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .cards-column.right-col {
+      transform: translateY(0);
+    }
+
+    @media (min-width: 1024px) {
+      .cards-column.right-col {
+        transform: translateY(5rem);
+      }
+    }
+
+    .column-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: #737373;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .feature-card {
+      padding: 2rem;
+      margin: 30px 0;
+      background: rgba(15, 15, 20, 0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .feature-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .feature-card:hover {
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(15, 15, 20, 0.5);
+    }
+
+    .card-icon-wrap {
+      margin-bottom: 1.5rem;
+    }
+
+    .card-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 9999px;
+      background: #171717;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 0 15px rgba(255,255,255,0.05);
+    }
+
+    .card-icon svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .card-icon .pulse-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.05);
+      transform: scale(1.25);
+      animation: pulse 2s infinite;
+    }
+
+    .feature-card h3 {
+      font-size: 1.125rem;
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .feature-card p {
+      font-size: 0.75rem;
+      color: #a3a3a3;
+      font-weight: 300;
+      line-height: 1.75;
+    }
+
+    /* Process Chips Section */
+    .chips-section {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 0 1.5rem 6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      max-width: 64rem;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1.5rem;
+      background: rgba(15,17,21,0.8);
+      border: 1px solid #262626;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      color: #d4d4d4;
+      font-weight: 300;
+      transition: all 0.3s;
+      cursor: default;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    .chip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .chip:hover {
+      border-color: #737373;
+      color: #fff;
+      transform: scale(1.05) translateY(0);
+      background: #15181e;
+    }
+
+    .chip-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 9999px;
+      background: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+    }
+
+    .chip span {
+      letter-spacing: 0.05em;
+    }
+
+    /* Footer */
+    .site-footer {
+      width: 100%;
+      border-top: 1px solid rgba(38,38,38,0.5);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      font-size: 10px;
+      color: #525252;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Center spacer for grid */
+    .center-spacer {
+      display: none;
+    }
+
+    @media (min-width: 1024px) {
+      .center-spacer { display: block; }
+    }
+
+    /* ===== SECTION 2: Pricing Section ===== */
+    .plain-section {
+      position: relative;
+      z-index: 10;
+      background: #07080a;
+      min-height: 100vh;
+      padding: 6rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .pricing-container {
+      width: 100%;
+      max-width: 72rem;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    /* Titles */
+    .pricing-header {
+      text-align: center;
+      max-width: 48rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .billing-promo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.75rem;
+      color: #a3a3a3;
+    }
+
+    .icon-promo {
+      width: 1rem;
+      height: 1rem;
+      stroke: #f97316;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .billing-promo strong {
+      color: #f97316;
+      font-weight: 600;
+    }
+
+    .pricing-title {
+      font-family: "Outfit", "Space Grotesk", sans-serif;
+      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to bottom, #fff, #a3a3a3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .pricing-subtitle {
+      color: #a3a3a3;
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 36rem;
+      margin: 0 auto;
+    }
+
+    /* Grid */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    @media (min-width: 768px) {
+      .pricing-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Card base style */
+    .pricing-card {
+      position: relative;
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .pricing-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-4px);
+    }
+
+    .card-inner {
+      padding: 2.5rem 2rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+
+    .plan-name {
+      color: #a3a3a3;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .plan-price-wrap {
+      height: 4rem;
+      display: flex;
+      align-items: baseline;
+      margin-bottom: 0.5rem;
+    }
+
+    .plan-price {
+      font-family: "Outfit", "Space Grotesk", sans-serif;
+      color: #fff;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .plan-period {
+      color: #a3a3a3;
+      font-size: 0.875rem;
+      margin-left: 0.375rem;
+    }
+
+    .billing-info-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: #f97316;
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+      padding: 0.25rem 0.625rem;
+      border-radius: 9999px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      align-self: flex-start;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .plan-desc {
+      color: #a3a3a3;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      min-height: 2.5rem;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .plan-features li {
+      font-size: 0.875rem;
+      color: #d4d4d4;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .check-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke: #d4d4d4;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      margin-top: 0.125rem;
+      flex-shrink: 0;
+    }
+
+    .plan-btn {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      width: 100%;
+      padding: 0.875rem;
+      border-radius: 9999px;
+      border: none;
+      background: #fff;
+      color: #000;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: auto;
+    }
+
+    .plan-btn:hover {
+      background: #e5e5e5;
+    }
+
+    /* Popular Pro Plan Styling */
+    .pricing-card.popular {
+      background: rgba(255, 255, 255, 0.04);
+      border: 2px solid rgba(249, 115, 22, 0.3); /* orange-500/30 */
+      box-shadow: 0 0 40px -5px rgba(249, 115, 22, 0.15);
+      overflow: visible;
+    }
+
+    .popular-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 32px;
+      background: linear-gradient(to bottom right, rgba(249, 115, 22, 0.1), transparent, rgba(234, 88, 12, 0.1));
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(to right, #f97316, #ea580c);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.375rem 1rem;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+      z-index: 3;
+    }
+
+    .sparkles-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .popular-btn {
+      background: linear-gradient(to right, #f97316, #ea580c);
+      color: #fff;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.1);
+    }
+
+    .popular-btn:hover {
+      background: linear-gradient(to right, #fb923c, #f97316);
+    }
+
+    /* Billing Toggle Footer */
+    .toggle-footer {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .toggle-footer {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0 1rem;
+      }
+    }
+
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .toggle-label {
+      font-size: 0.875rem;
+      color: #737373;
+      transition: color 0.2s ease;
+      font-weight: 500;
+    }
+
+    .toggle-label.active {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .toggle-track {
+      width: 3.5rem;
+      height: 2rem;
+      border-radius: 9999px;
+      background: #262626;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.25rem;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .toggle-track.active {
+      background: #f97316;
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+
+    .toggle-thumb {
+      width: 1.375rem;
+      height: 1.375rem;
+      border-radius: 9999px;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toggle-track.active .toggle-thumb {
+      transform: translateX(1.5rem);
+    }
+
+    .discount-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #f97316;
+      background: rgba(249, 115, 22, 0.15);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      margin-left: 0.375rem;
+      text-transform: uppercase;
+    }
+
+    .footer-footnote {
+      font-size: 0.75rem;
+      color: #525252;
+    }
+
+    /* ===== SECTION 3: CG Agency Layout Overlay & Scroll Zone ===== */
+    .animation-scroll-area-2 {
+      position: relative;
+      z-index: 5;
+      pointer-events: none;
+      background: transparent;
+      padding-bottom: 6rem;
+    }
+
+    .animation-scroll-area-2 * {
+      pointer-events: auto;
+    }
+
+    .cg-agency-header {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: relative;
+      z-index: 20;
+    }
+
+    .cg-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cg-brand-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 9999px;
+      background: #fff;
+      animation: pulse 2s infinite;
+    }
+
+    .cg-brand span {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .cg-rev-badge {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 1.25rem;
+      max-width: 13.75rem;
+      text-align: right;
+      display: none;
+      background: rgba(15, 15, 20, 0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    @media (min-width: 768px) {
+      .cg-rev-badge { display: block; }
+    }
+
+    .cg-rev-val {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-end;
+      gap: 0.125rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .cg-rev-val .num {
+      font-size: 1.875rem;
+      font-weight: 300;
+      letter-spacing: -0.05em;
+      color: #fff;
+    }
+
+    .cg-rev-val .symbol {
+      font-size: 0.875rem;
+      font-weight: 300;
+      color: #fff;
+    }
+
+    .cg-rev-badge h4 {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .cg-rev-badge p {
+      font-size: 10px;
+      line-height: 1.4;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Hero section */
+    .cg-hero {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 6rem 1.5rem 4rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .cg-hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    @media (min-width: 1024px) {
+      .cg-hero-grid {
+        grid-template-columns: 7fr 5fr;
+        gap: 3rem;
+      }
+    }
+
+    .cg-hero h1 {
+      font-size: clamp(2.5rem, 5vw, 3.75rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      color: #fff;
+    }
+
+    .cg-hero h1 .italic-underline {
+      font-style: italic;
+      text-decoration: underline;
+      text-underline-offset: 16px;
+      text-decoration-thickness: 1px;
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    .cg-hero-desc {
+      font-size: 1rem;
+      line-height: 1.7;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    @media (min-width: 1024px) {
+      .cg-hero-desc {
+        padding-top: 2rem;
+      }
+    }
+
+    /* Stats Section */
+    .cg-stats {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .cg-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    @media (min-width: 768px) {
+      .cg-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+      }
+    }
+
+    .cg-stat-card {
+      transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .cg-stat-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cg-stat-card .divider {
+      height: 1px;
+      background: #fff;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      transition: background-color 0.3s;
+    }
+
+    .cg-stat-card:hover .divider {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .cg-stat-val {
+      display: flex;
+      align-items: baseline;
+      gap: 0.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cg-stat-val .num {
+      font-size: clamp(3rem, 5vw, 3.75rem);
+      font-weight: 300;
+      font-style: italic;
+      color: #fff;
+    }
+
+    .cg-stat-val .symbol {
+      font-size: 1.25rem;
+      font-weight: 300;
+      color: #fff;
+    }
+
+    .cg-stat-card h3 {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+
+    .cg-stat-card p {
+      font-size: 0.875rem;
+      font-weight: 300;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Transition block */
+    .cg-transition-sec {
+      width: 100%;
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .cg-transition-sec p {
+      font-size: clamp(0.75rem, 2vw, 0.875rem);
+      letter-spacing: 0.25em;
+      line-height: 1.8;
+      font-weight: 700;
+      text-transform: uppercase;
+      max-width: 42rem;
+      margin: 0 auto;
+      color: #fff;
+    }
+
+    .cg-transition-sec .line {
+      width: 4rem;
+      height: 1px;
+      background: #fff;
+      margin: 1.5rem auto 0;
+    }
+
+    .cg-exp-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 2rem;
+      margin: 30px 0;
+      background: rgba(15, 15, 20, 0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 16rem;
+      transition: all 0.3s;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .cg-exp-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cg-exp-card:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(15, 15, 20, 0.5);
+    }
+
+    /* Experiential Grid */
+    .cg-experiential {
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+      position: relative;
+    }
+
+    /* Desktop layout columns matching Section 1 spacing */
+    .cg-exp-desktop {
+      display: none;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 4rem 0;
+    }
+
+    @media (min-width: 1200px) {
+      .cg-exp-desktop {
+        display: grid;
+        grid-template-columns: 5fr 2fr 5fr;
+        gap: 6rem;
+      }
+    }
+
+    .cg-exp-column {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .cg-exp-column.right-col {
+      transform: translateY(0);
+    }
+
+    @media (min-width: 1200px) {
+      .cg-exp-column.right-col {
+        transform: translateY(5rem);
+      }
+    }
+
+    .card-icons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-icon-lg {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 9999px; /* Make it round like Section 1 */
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative; /* For pulse-ring positioning */
+      transition: border-color 0.3s;
+    }
+
+    .card-icon-lg .pulse-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.05);
+      transform: scale(1.25);
+      animation: pulse 2s infinite;
+      pointer-events: none;
+    }
+
+    .card-icon-lg svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .card-icon-sm {
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-icon-sm svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .cg-exp-card p {
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: #a3a3a3; /* Matches Section 1's text color */
+    }
+
+    .card-number {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      margin-top: 2rem;
+    }
+
+    /* Mobile grid */
+    .cg-exp-mobile {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (min-width: 768px) {
+      .cg-exp-mobile {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .cg-exp-mobile { display: none; }
+    }
+
+    .cg-exp-mobile-full {
+      grid-column: 1 / -1;
+    }
+
+    /* Footer */
+    .cg-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      width: 100%;
+      max-width: 80rem;
+      margin: 5rem auto 0;
+      padding: 3rem 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      font-weight: 300;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (min-width: 768px) {
+      .cg-footer {
+        flex-direction: row;
+      }
+    }
+
+    .cg-copy {
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cg-links {
+      display: flex;
+      gap: 2rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .cg-links a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .cg-links a:hover {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* ===== SECTION 4: Plain Black Section ===== */
+    .section-4 {
+      position: relative;
+      z-index: 10;
+      background: #000000;
+      min-height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: "DM Sans", "Inter", sans-serif;
+      color: #e5e5e5;
+      padding: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .section-4 {
+        padding: 2.5rem;
+      }
+    }
+
+    .sec-4-video-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    /* Subtle decorative glowing points */
+    .sec-4-subtle-points {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 2;
+    }
+    .sec-4-point {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+    .sec-4-point-1 {
+      top: 25%;
+      left: 25%;
+      opacity: 0.3;
+    }
+    .sec-4-point-2 {
+      top: 33.3%;
+      right: 25%;
+      background: #f97316;
+      opacity: 0.2;
+      animation: pulse 2s infinite;
+    }
+    .sec-4-point-3 {
+      bottom: 25%;
+      left: 33.3%;
+      opacity: 0.4;
+    }
+    .sec-4-point-4 {
+      bottom: 33.3%;
+      right: 33.3%;
+      opacity: 0.25;
+    }
+
+    .sec-4-main {
+      flex: 1 1 0%;
+      width: 100%;
+      max-width: 80rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      z-index: 10;
+    }
+    @media (min-width: 768px) {
+      .sec-4-main {
+        flex-direction: row;
+        gap: 2.5rem;
+      }
+    }
+    @media (min-width: 1024px) {
+      .sec-4-main {
+        gap: 4rem;
+      }
+    }
+
+    .sec-4-col-left {
+      width: 100%;
+      text-align: center;
+      user-select: none;
+    }
+    .sec-4-col-right {
+      width: 100%;
+      text-align: center;
+      user-select: none;
+    }
+    @media (min-width: 768px) {
+      .sec-4-col-left {
+        width: 33.333333%;
+        text-align: right;
+      }
+      .sec-4-col-right {
+        width: 33.333333%;
+        text-align: left;
+      }
+    }
+
+    .sec-4-title {
+      font-size: 2.25rem;
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      line-height: 1;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 120, 0, 0.15);
+      user-select: none;
+    }
+    @media (min-width: 640px) {
+      .sec-4-title {
+        font-size: 3rem;
+      }
+    }
+    @media (min-width: 1024px) {
+      .sec-4-title {
+        font-size: 3.75rem;
+      }
+    }
+
+    .sec-4-spacer {
+      width: 280px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    @media (min-width: 640px) {
+      .sec-4-spacer {
+        width: 350px;
+        height: 350px;
+      }
+    }
+    @media (min-width: 768px) {
+      .sec-4-spacer {
+        width: 400px;
+        height: 400px;
+      }
+    }
+    @media (min-width: 1024px) {
+      .sec-4-spacer {
+        width: 450px;
+        height: 450px;
+      }
+    }
+
+    .sec-4-footer {
+      width: 100%;
+      max-width: 42rem;
+      text-align: center;
+      z-index: 10;
+    }
+    .sec-4-footer-text {
+      font-size: 10px;
+      color: #525252;
+      font-family: monospace;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    /* Section 4 Entry Animations */
+    .sec-4-animate-left {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      transition-delay: 0.2s;
+    }
+    .sec-4-animate-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .sec-4-animate-right {
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      transition-delay: 0.2s;
+    }
+    .sec-4-animate-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .sec-4-animate-footer {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      transition-delay: 0.4s;
+    }
+    .sec-4-animate-footer.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Additional custom CTA styles added by Antigravity */
+    .cg-hero-btn {
+      display: inline-block;
+      padding: 0.875rem 2.25rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 1.5rem;
+    }
+    .cg-hero-btn:hover {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+    }
+
+    .sec-4-btn {
+      display: inline-block;
+      padding: 0.875rem 2rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    .sec-4-btn:hover {
+      border-color: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas for animation 1 (behind section 1 layout) -->
+  <canvas id="canvas-1" class="anim-canvas"></canvas>
+  <!-- Canvas for animation 2 -->
+  <canvas id="canvas-2" class="anim-canvas"></canvas>
+
+
+  <!-- ===== SECTION 1: Vortiq Layout overlaid on Scroll Animation 1 ===== -->
+  <div class="section-1-overlay" id="scroll-area-1">
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+      <a class="brand" href="./vortiq-ai-agents/dist/index.html" style="text-decoration: none; color: inherit;">
+        <svg viewBox="0 0 100 100"><path d="M 20 10 L 50 85 L 80 10 L 60 10 L 50 60 L 40 10 Z" /></svg>
+        <span>Vortiq</span>
+      </a>
+      <nav class="nav-pills">
+        <button>SOLUTIONS</button>
+        <button>FEATURES</button>
+        <button>PRICING</button>
+        <button>CUSTOMERS</button>
+      </nav>
+      <div>
+        <a class="header-cta" href="./vortiq-ai-agents/dist/index.html" style="text-decoration: none; display: inline-block;">BOOK DEMO</a>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="hero">
+      <div class="hero-content">
+        <div>
+          <h1>
+            <span>Level up</span>
+            <span>your vision</span>
+            <span class="muted">with future</span>
+            <span class="muted">of VR</span>
+          </h1>
+        </div>
+        <div class="hero-ctas">
+          <a href="./vortiq-ai-agents/dist/index.html" class="btn-primary">Book a Demo</a>
+          <a href="./vortiq-ai-agents/dist/index.html" class="btn-secondary">Learn More</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Cards Grid Section -->
+    <section class="cards-section">
+      <div class="cards-grid">
+
+        <!-- Left Column -->
+        <div class="cards-column">
+          <div class="column-label">Sovereign Core Architecture</div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Advanced secure system</h3>
+            <p>Advanced protection to keep transactions safe, confidential, and fully reliable.</p>
+          </div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Sovereign control</h3>
+            <p>Total data sovereignty with localized storage keys and custom restricted access clearances.</p>
+          </div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Deep market research</h3>
+            <p>Automated workflow agents parsing global financial data streams for continuous real-time market analysis.</p>
+          </div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Cognitive automation</h3>
+            <p>Empower your business with self-correcting cognitive stacks designed to resolve complex, nested variables.</p>
+          </div>
+        </div>
+
+        <!-- Center Spacer -->
+        <div class="center-spacer" aria-hidden="true"></div>
+
+        <!-- Right Column -->
+        <div class="cards-column right-col">
+          <div class="column-label">Access & Delivery Matrix</div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M18 9v3m0 0v3m0-3h3m-3-3h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Seamless user access</h3>
+            <p>Seamless experience for managing financial resources anytime, anywhere with modern secure integrations.</p>
+          </div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Real-time intelligence</h3>
+            <p>Continuous telemetry tracking and auto-scaling processing speeds across dynamic sovereign node clusters.</p>
+          </div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Enterprise scaling</h3>
+            <p>Designed with complete transaction separation to safely handle heavy traffic under zero-latency constraints.</p>
+          </div>
+
+          <div class="feature-card" data-anim="card">
+            <div class="card-icon-wrap">
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" /></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            </div>
+            <h3>Continuous feedback</h3>
+            <p>Dynamic, real-time reinforcement loops learning directly from workflow inputs to continuously improve accuracy.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Process Chips Section -->
+    <section class="chips-section">
+      <div class="column-label" style="align-self: center;">Development & Deployment Lifecycle</div>
+      <div class="chips-wrap">
+        <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>Market research</span></div>
+        <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>Product design</span></div>
+        <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>Beta launch</span></div>
+        <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>User needs analysis</span></div>
+        <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>System development</span></div>
+        <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>User feedback</span></div>
+        <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>Performance optimization</span></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      &copy; 2025 Vortiq Inc. Sovereign cognitive automation systems.
+    </footer>
+
+  </div>
+
+  <!-- ===== SECTION 2: Pricing Layout ===== -->
+  <section class="plain-section" id="pricing-section">
+    <div class="pricing-container">
+      
+      <!-- Page Titles Section -->
+      <div class="pricing-header">
+        <div class="billing-promo">
+          <svg class="icon-promo" viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span>Select Yearly billing to <strong>Save 20%</strong> instantly</span>
+        </div>
+        <h2 class="pricing-title">Plans For Every Scale</h2>
+        <p class="pricing-subtitle">
+          Configure premium cloud pipelines, secure cloud backups, and high-fidelity media exports tailored perfectly for your workflow.
+        </p>
+      </div>
+
+      <!-- Pricing Cards Grid -->
+      <div class="pricing-grid">
+        <!-- FREE PLAN -->
+        <div class="pricing-card" id="card-free">
+          <div class="card-inner">
+            <div>
+              <span class="plan-name">Basic</span>
+              <div class="plan-price-wrap">
+                <span class="plan-price" data-monthly="$6" data-yearly="$5">$5</span>
+                <span class="plan-period">/m</span>
+              </div>
+              <div class="billing-info-badge">Billed yearly ($60/y) — Save 20%</div>
+              <p class="plan-desc">For creators taking their first steps with Forma.</p>
+              <ul class="plan-features">
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Up to 3 projects in the cloud</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Image export up to 1080p</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Basic editing tools</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Free templates and icons</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Access via web and mobile app</li>
+              </ul>
+            </div>
+            <button class="plan-btn">Choose Plan</button>
+          </div>
+        </div>
+
+        <!-- STANDARD PLAN -->
+        <div class="pricing-card" id="card-standard">
+          <div class="card-inner">
+            <div>
+              <span class="plan-name">Standard</span>
+              <div class="plan-price-wrap">
+                <span class="plan-price" data-monthly="$9,99" data-yearly="$7,99">$7,99</span>
+                <span class="plan-period">/m</span>
+              </div>
+              <div class="billing-info-badge">Billed yearly ($95,88/y) — Save 20%</div>
+              <p class="plan-desc">For freelancers and small teams who need more freedom and flexibility.</p>
+              <ul class="plan-features">
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Up to 50 projects in the cloud</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Export up to 4K</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Advanced editing toolkit</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Team collaboration (up to 5 members)</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Access to premium template library</li>
+              </ul>
+            </div>
+            <button class="plan-btn">Choose Plan</button>
+          </div>
+        </div>
+
+        <!-- PRO PLAN -->
+        <div class="pricing-card popular" id="card-pro">
+          <div class="popular-glow"></div>
+          <div class="popular-badge">
+            <svg class="sparkles-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+            Most Popular
+          </div>
+          <div class="card-inner">
+            <div>
+              <span class="plan-name">Pro</span>
+              <div class="plan-price-wrap">
+                <span class="plan-price" data-monthly="$19,99" data-yearly="$15,99">$15,99</span>
+                <span class="plan-period">/m</span>
+              </div>
+              <div class="billing-info-badge">Billed yearly ($191,88/y) — Save 20%</div>
+              <p class="plan-desc">For studios, agencies, and professional creators working with brands.</p>
+              <ul class="plan-features">
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Unlimited projects</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Export up to 8K + animations</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> AI-powered content generation tools</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Unlimited team members</li>
+                <li><svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Brand customization</li>
+              </ul>
+            </div>
+            <button class="plan-btn popular-btn">Choose Plan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing Cycle Toggle -->
+      <div class="toggle-footer">
+        <div class="toggle-wrap">
+          <span class="toggle-label" id="label-monthly">Billed Monthly</span>
+          <button class="toggle-track active" id="billing-cycle-toggle" aria-label="Toggle between monthly and yearly billing">
+            <div class="toggle-thumb"></div>
+          </button>
+          <span class="toggle-label active" id="label-yearly">
+            Yearly
+            <span class="discount-badge">-20%</span>
+          </span>
+        </div>
+        <div class="footer-footnote">
+          * All tiers are subject to fair use resource quotas. Prices are listed in USD.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== SECTION 3: CG Agency Layout Overlaid on Scroll Animation 2 ===== -->
+  <div class="animation-scroll-area-2" id="scroll-area-2">
+    
+    <!-- Top Header / Brand Navigation -->
+    <div class="cg-agency-header">
+      <a class="cg-brand" href="./cg-agency/dist/index.html" style="text-decoration: none; color: inherit;">
+        <div class="cg-brand-dot"></div>
+        <span>CG Agency</span>
+      </a>
+      
+      <!-- Top-Right Mini Average Revenue Badge -->
+      <div class="cg-rev-badge">
+        <div class="cg-rev-val">
+          <span class="num">43k</span>
+          <span class="symbol">$</span>
+        </div>
+        <h4>AVERAGE REVENUE</h4>
+        <p>we begin to meet our clients' goals monthly</p>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="cg-hero">
+      <div class="cg-hero-grid">
+        <!-- Main heading -->
+        <div>
+          <h1>
+            We offer next level<br />
+            <span class="italic-underline">solutions</span>
+          </h1>
+        </div>
+
+        <!-- Subtext description -->
+        <div>
+          <p class="cg-hero-desc">
+            After working with us, your business will achieve the new heights. We will return to you with in-depth analysis, tailored strategies and business problems solved. We transform your problems. After working with us, your business will achieve the new heights.
+          </p>
+          <a href="./cg-agency/dist/index.html" class="cg-hero-btn">Launch CG Agency</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Section -->
+    <section class="cg-stats">
+      <div class="cg-stats-grid">
+        
+        <!-- Stat 1 -->
+        <div class="cg-stat-card" data-anim="cg-stat">
+          <div class="divider"></div>
+          <div class="cg-stat-val">
+            <span class="num">43k</span>
+            <span class="symbol">$</span>
+          </div>
+          <h3>AVERAGE REVENUE</h3>
+          <p>we begin to meet our clients' goals monthly by providing marketing services</p>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="cg-stat-card" data-anim="cg-stat">
+          <div class="divider"></div>
+          <div class="cg-stat-val">
+            <span class="num">200</span>
+            <span class="symbol">+</span>
+          </div>
+          <h3>CAMPAIGNS</h3>
+          <p>were successfully launched within 5 years on the market</p>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="cg-stat-card" data-anim="cg-stat">
+          <div class="divider"></div>
+          <div class="cg-stat-val">
+            <span class="num">380</span>
+            <span class="symbol">+</span>
+          </div>
+          <h3>SUCCESSFUL PROJECTS</h3>
+          <p>were completed within 5 years on the market</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Transition sentence -->
+    <section class="cg-transition-sec">
+      <p>AT CG AGENCY, HELPING BUSINESSES TO TACKLE CHALLENGES IS CRUCIAL. WORKING WITH US WILL PROVIDE YOU LONG-TERM GROWTH</p>
+      <div class="line"></div>
+    </section>
+
+    <!-- Experiential Grid Layout -->
+    <section class="cg-experiential">
+      
+      <!-- Desktop layout: clean column stacks matching Section 1 spacing -->
+      <div class="cg-exp-desktop">
+        <!-- Left Column -->
+        <div class="cg-exp-column">
+          <!-- Card 1 -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p>“We have difficulties in attracting and converting potential customers.”</p>
+            <div class="card-number">01 / Conversion</div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p>“Our goal is to stand out among others — we need to regain influence on the market.”</p>
+            <div class="card-number">03 / Positioning</div>
+          </div>
+
+          <!-- Card 4 (New) -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p>“We need a cohesive brand architecture that establishes trust and authority in our space.”</p>
+            <div class="card-number">04 / Branding & Identity</div>
+          </div>
+
+          <!-- Card 6 (New) -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p>“We struggle to automate complex workflows and operations, holding back our ability to scale globally.”</p>
+            <div class="card-number">06 / Scale & Expansion</div>
+          </div>
+        </div>
+
+        <!-- Center Spacer -->
+        <div class="center-spacer" aria-hidden="true"></div>
+
+        <!-- Right Column -->
+        <div class="cg-exp-column right-col">
+          <!-- Card 2 -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p>“Our sales and ROI could use a serious boost, and I need campaigns that actually deliver results.”</p>
+            <div class="card-number">02 / Campaign Growth</div>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p style="font-weight: 500;">“We use the best SEO practices to get results. We provide tailored strategies, keyword research, and analytics, ensuring long-term search visibility.”</p>
+            <div class="card-number">05 / SEO & Search Authority</div>
+          </div>
+
+          <!-- Card 7 (New) -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p>“We need actionable market analytics to optimize our funnels and drive data-backed financial decisions.”</p>
+            <div class="card-number">07 / Data Intelligence</div>
+          </div>
+
+          <!-- Card 8 (New) -->
+          <div class="cg-exp-card" data-anim="cg-card">
+            <div class="card-icons">
+              <div class="card-icon-lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <div class="pulse-ring"></div>
+              </div>
+              <div class="card-icon-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+              </div>
+            </div>
+            <p>“Our customer lifecycle value needs optimization with smart retention automation and targeted nurturing flows.”</p>
+            <div class="card-number">08 / Customer Retention</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile layout: grid -->
+      <div class="cg-exp-mobile">
+        <!-- Card 1 -->
+        <div class="cg-exp-card" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p>“We have difficulties in attracting and converting potential customers.”</p>
+          <div class="card-number">01 / Conversion</div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="cg-exp-card" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p>“Our sales and ROI could use a serious boost, and I need campaigns that actually deliver results.”</p>
+          <div class="card-number">02 / Campaign Growth</div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="cg-exp-card" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p>“Our goal is to stand out among others — we need to regain influence on the market.”</p>
+          <div class="card-number">03 / Positioning</div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="cg-exp-card" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p>“We need a cohesive brand architecture that establishes trust and authority in our space.”</p>
+          <div class="card-number">04 / Branding & Identity</div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="cg-exp-card" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p style="font-weight: 500;">“We use the best SEO practices to get results. We provide tailored strategies, keyword research, and analytics, ensuring long-term search visibility.”</p>
+          <div class="card-number">05 / SEO & Search Authority</div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="cg-exp-card" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p>“We struggle to automate complex workflows and operations, holding back our ability to scale globally.”</p>
+          <div class="card-number">06 / Scale & Expansion</div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="cg-exp-card" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p>“We need actionable market analytics to optimize our funnels and drive data-backed financial decisions.”</p>
+          <div class="card-number">07 / Data Intelligence</div>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="cg-exp-card cg-exp-mobile-full" data-anim="cg-card">
+          <div class="card-icons">
+            <div class="card-icon-lg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <div class="pulse-ring"></div>
+              </div>
+            <div class="card-icon-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </div>
+          </div>
+          <p>“Our customer lifecycle value needs optimization with smart retention automation and targeted nurturing flows.”</p>
+          <div class="card-number">08 / Customer Retention</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Footer Copyright -->
+    <footer class="cg-footer">
+      <div class="cg-copy">
+        © 2026 CG Agency. All rights reserved.
+      </div>
+      <div class="cg-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ===== SECTION 4: Plain Black Section ===== -->
+  <section class="section-4" id="section-4">
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline class="sec-4-video-bg">
+      <source src="https://res.cloudinary.com/docyrknxf/video/upload/v1784368975/Man_wearing_VR_headset_1080p_202607181531_j9hrp0.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- Decorative stars/glowing points in the background -->
+    <div class="sec-4-subtle-points">
+      <div class="sec-4-point sec-4-point-1"></div>
+      <div class="sec-4-point sec-4-point-2"></div>
+      <div class="sec-4-point sec-4-point-3"></div>
+      <div class="sec-4-point sec-4-point-4"></div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="sec-4-main">
+      <!-- Left Headline Component -->
+      <div class="sec-4-col-left sec-4-animate-left" data-anim="sec4-left">
+        <h1 class="sec-4-title">Out of time</h1>
+      </div>
+
+      <!-- Central interactive spacer (aligned with background VR video center) -->
+      <div class="sec-4-spacer"></div>
+
+      <!-- Right Headline Component -->
+      <div class="sec-4-col-right sec-4-animate-right" data-anim="sec4-right">
+        <h1 class="sec-4-title">and space</h1>
+      </div>
+    </main>
+
+    <!-- Bottom Footer -->
+    <footer class="sec-4-footer sec-4-animate-footer" data-anim="sec4-footer">
+      <div class="sec-4-footer-text">
+        © 2026 Coinflect Foundation • Decentralized Multi-chain Node
+      </div>
+    </footer>
+  </section>
+
+  <script>
+    // ========== SCROLL ANIMATION ENGINE ==========
+    class ScrollAnimation {
+      constructor({ canvasId, scrollAreaId, totalFrames, imageDir }) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.scrollArea = document.getElementById(scrollAreaId);
+        this.totalFrames = totalFrames;
+        this.imageDir = imageDir;
+        this.images = [];
+        this.loadedCount = 0;
+        this.currentFrame = 0;
+        this.targetFrame = 0;
+        this.active = false;
+      }
+
+      getFramePath(index) {
+        const num = String(index).padStart(3, '0');
+        return `${this.imageDir}ezgif-frame-${num}.jpg`;
+      }
+
+      preload() {
+        return new Promise((resolve) => {
+          for (let i = 1; i <= this.totalFrames; i++) {
+            const img = new Image();
+            img.src = this.getFramePath(i);
+            img.onload = () => {
+              this.loadedCount++;
+              if (this.loadedCount === this.totalFrames) resolve();
+            };
+            img.onerror = () => {
+              this.loadedCount++;
+              if (this.loadedCount === this.totalFrames) resolve();
+            };
+            this.images.push(img);
+          }
+        });
+      }
+
+      resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = window.innerWidth * dpr;
+        this.canvas.height = window.innerHeight * dpr;
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      drawFrame(frameIndex) {
+        const img = this.images[frameIndex];
+        if (!img || !img.complete || img.naturalWidth === 0) return;
+
+        const canvasW = window.innerWidth;
+        const canvasH = window.innerHeight;
+        const imgW = img.naturalWidth;
+        const imgH = img.naturalHeight;
+
+        const scale = Math.max(canvasW / imgW, canvasH / imgH);
+        const drawW = imgW * scale;
+        const drawH = imgH * scale;
+        const drawX = (canvasW - drawW) / 2;
+        const drawY = (canvasH - drawH) / 2;
+
+        this.ctx.clearRect(0, 0, canvasW, canvasH);
+        this.ctx.drawImage(img, drawX, drawY, drawW, drawH);
+      }
+
+      getScrollFrameIndex() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const areaTop = this.scrollArea.offsetTop;
+        const areaHeight = this.scrollArea.offsetHeight;
+        const viewH = window.innerHeight;
+
+        const animStart = areaTop;
+        const animEnd = areaTop + areaHeight - viewH;
+        const progress = (scrollTop - animStart) / (animEnd - animStart);
+        const clamped = Math.min(Math.max(progress, 0), 1);
+        return Math.round(clamped * (this.totalFrames - 1));
+      }
+
+      isInView() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const viewH = window.innerHeight;
+        const areaTop = this.scrollArea.offsetTop;
+        const areaBottom = areaTop + this.scrollArea.offsetHeight;
+
+        return scrollTop + viewH > areaTop && scrollTop < areaBottom;
+      }
+
+      updateVisibility() {
+        const visible = this.isInView();
+        this.canvas.style.display = visible ? 'block' : 'none';
+        this.active = visible;
+      }
+
+      update() {
+        if (!this.active) return;
+        this.targetFrame = this.getScrollFrameIndex();
+      }
+
+      animate() {
+        if (!this.active) return;
+
+        this.currentFrame += (this.targetFrame - this.currentFrame) * 0.15;
+        if (Math.abs(this.currentFrame - this.targetFrame) < 0.01) {
+          this.currentFrame = this.targetFrame;
+        }
+
+        this.drawFrame(Math.round(this.currentFrame));
+      }
+    }
+
+    // ========== INTERSECTION OBSERVER FOR CARD/CHIP ANIMATIONS ==========
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('[data-anim="card"], [data-anim="chip"], [data-anim="cg-card"], [data-anim="cg-stat"]').forEach((el, i) => {
+      el.style.transitionDelay = `${i * 0.06}s`;
+      el.style.transitionDuration = '0.6s';
+      el.style.transitionProperty = 'opacity, transform';
+      el.style.transitionTimingFunction = 'ease-out';
+      observer.observe(el);
+    });
+
+    // ========== INIT ==========
+    const anim1 = new ScrollAnimation({
+      canvasId: 'canvas-1',
+      scrollAreaId: 'scroll-area-1',
+      totalFrames: 72,
+      imageDir: 'ezgif-672251eed8a63f0a-jpg/'
+    });
+
+    const anim2 = new ScrollAnimation({
+      canvasId: 'canvas-2',
+      scrollAreaId: 'scroll-area-2',
+      totalFrames: 77,
+      imageDir: 'ezgif-4c4d28e42b277dfc-jpg/'
+    });
+
+    const animations = [anim1, anim2];
+
+    function resizeAll() {
+      animations.forEach(a => {
+        a.resizeCanvas();
+        a.drawFrame(Math.round(a.currentFrame));
+      });
+    }
+
+    function onScroll() {
+      animations.forEach(a => {
+        a.updateVisibility();
+        a.update();
+      });
+    }
+
+    function animationLoop() {
+      animations.forEach(a => a.animate());
+      requestAnimationFrame(animationLoop);
+    }
+
+    async function init() {
+      resizeAll();
+      window.addEventListener('resize', resizeAll);
+
+      await Promise.all(animations.map(a => a.preload()));
+
+      anim1.drawFrame(0);
+      anim2.drawFrame(0);
+
+      onScroll();
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      animationLoop();
+    }
+
+    // ========== BILLING CYCLE TOGGLE LOGIC ==========
+    const toggleBtn = document.getElementById('billing-cycle-toggle');
+    const labelMonthly = document.getElementById('label-monthly');
+    const labelYearly = document.getElementById('label-yearly');
+    const prices = document.querySelectorAll('.plan-price');
+    const badges = document.querySelectorAll('.billing-info-badge');
+
+    let billingCycle = 'yearly'; // default
+
+    function updateBillingDisplay() {
+      if (billingCycle === 'yearly') {
+        toggleBtn.classList.add('active');
+        labelMonthly.classList.remove('active');
+        labelYearly.classList.add('active');
+        
+        // Show yearly pricing
+        prices.forEach(price => {
+          const val = price.getAttribute('data-yearly');
+          price.textContent = val;
+        });
+
+        // Show yearly billed badges
+        badges.forEach(badge => {
+          if (badge.textContent !== 'Placeholder') {
+            badge.style.opacity = '1';
+            badge.style.pointerEvents = 'auto';
+            badge.style.height = 'auto';
+            badge.style.margin = '0 0 1rem 0';
+            badge.style.padding = '0.25rem 0.625rem';
+            badge.style.border = '1px solid rgba(249, 115, 22, 0.2)';
+          }
+        });
+      } else {
+        toggleBtn.classList.remove('active');
+        labelMonthly.classList.add('active');
+        labelYearly.classList.remove('active');
+        
+        // Show monthly pricing
+        prices.forEach(price => {
+          const val = price.getAttribute('data-monthly');
+          price.textContent = val;
+        });
+
+        // Hide yearly billed badges
+        badges.forEach(badge => {
+          if (badge.textContent !== 'Placeholder') {
+            badge.style.opacity = '0';
+            badge.style.pointerEvents = 'none';
+            badge.style.height = '0';
+            badge.style.margin = '0';
+            badge.style.padding = '0';
+            badge.style.border = 'none';
+          }
+        });
+      }
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        billingCycle = billingCycle === 'yearly' ? 'monthly' : 'yearly';
+        updateBillingDisplay();
+      });
+    }
+
+    // ========== SECTION 4 ENTRY ANIMATION OBSERVER ==========
+    const sec4Observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('[data-anim="sec4-left"], [data-anim="sec4-right"], [data-anim="sec4-footer"]').forEach((el) => {
+      sec4Observer.observe(el);
+    });
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Vortiq AI Agents",
+  "description": "A minimalist hero landing page for Vortiq AI agents with a sleek, dark aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

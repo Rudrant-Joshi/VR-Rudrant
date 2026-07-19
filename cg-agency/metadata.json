@@ -1,0 +1,6 @@
+{
+  "name": "CG Agency",
+  "description": "A high-performance landing page for CG Agency, showcasing solutions, campaign metrics, and growth strategies with clean typography.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

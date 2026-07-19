@@ -1,0 +1,6 @@
+{
+  "name": "Time and Space",
+  "description": "A beautiful, minimalist landing page featuring a glowing central ring with the message 'Out of time and space', using DM Sans typography.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

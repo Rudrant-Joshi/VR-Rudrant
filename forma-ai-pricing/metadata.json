@@ -1,0 +1,6 @@
+{
+  "name": "Forma AI Pricing",
+  "description": "A clean, modern, transparent pricing page with yearly toggle and glassmorphism styling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
