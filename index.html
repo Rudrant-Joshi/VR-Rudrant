@@ -164,7 +164,7 @@
     }
 
     .hero h1 .muted {
-      color: #a3a3a3;
+      color: rgba(255, 255, 255, 0.4);
     }
 
     .hero-ctas {
@@ -177,40 +177,95 @@
     }
 
     .btn-primary {
+      position: relative;
       display: inline-block;
       text-decoration: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.75rem 1.75rem;
       background: #fff;
       color: #000;
       font-size: 0.75rem;
       font-weight: 700;
       border-radius: 9999px;
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.4);
       cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 10px 20px rgba(255,255,255,0.05);
+      overflow: hidden;
+      z-index: 1;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.6),
+        transparent
+      );
+      transform: skewX(-20deg);
+      transition: none;
+      z-index: 2;
     }
 
     .btn-primary:hover {
-      background: #e5e5e5;
+      background: #fff;
+      color: #000;
+      border-color: rgba(255, 255, 255, 0.9);
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(255, 255, 255, 0.15), 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary:hover::after {
+      left: 150%;
+      transition: all 0.75s ease-in-out;
     }
 
     .btn-secondary {
+      position: relative;
       display: inline-block;
       text-decoration: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.75rem 1.75rem;
       background: transparent;
       color: #fff;
       font-size: 0.75rem;
       font-weight: 700;
       border-radius: 9999px;
-      border: 1px solid #262626;
+      border: 1px solid rgba(255, 255, 255, 0.3);
       cursor: pointer;
-      transition: all 0.2s;
+      overflow: hidden;
+      z-index: 1;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-secondary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.12);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: -1;
+      border-radius: 9999px;
     }
 
     .btn-secondary:hover {
-      border-color: #737373;
+      border-color: rgba(255, 255, 255, 0.9);
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover::before {
+      transform: scaleX(1);
+      transform-origin: left;
     }
 
     /* Cards Grid Section */
@@ -1529,6 +1584,362 @@
       background: rgba(255, 255, 255, 0.1);
       transform: scale(1.05);
     }
+
+    /* ===== SECTION 5: Vortiq Premium Brand Layout ===== */
+    .section-5 {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      font-family: "Inter", "DM Sans", sans-serif;
+      color: #ffffff;
+      padding: 1.5rem;
+      box-sizing: border-box;
+    }
+    @media (min-width: 768px) {
+      .section-5 {
+        padding: 3rem;
+      }
+    }
+
+    .sec-5-video-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    .sec-5-content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 80rem;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sec-5-header {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      align-items: start;
+      width: 100%;
+      padding-top: 1rem;
+    }
+    @media (min-width: 768px) {
+      .sec-5-header {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+    }
+
+    /* Left Nav links */
+    .sec-5-nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      text-align: left;
+    }
+    .sec-5-nav-link {
+      font-size: 17px;
+      font-weight: 500;
+      color: #ffffff;
+      cursor: pointer;
+      width: fit-content;
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+    .sec-5-nav-link.active {
+      color: #737373;
+    }
+    .sec-5-nav-link:hover {
+      color: #d4d4d4;
+    }
+
+    /* Center info */
+    .sec-5-center-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+    }
+    .sec-5-address-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .sec-5-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #737373;
+    }
+    .sec-5-address {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: #a3a3a3;
+      max-width: 280px;
+      margin: 0;
+    }
+    .sec-5-socials {
+      display: flex;
+      gap: 0.625rem;
+      margin-top: 0.5rem;
+    }
+    .sec-5-social-btn {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 6px;
+      background: #0a0a0a;
+      border: 1px solid #171717;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a3a3a3;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .sec-5-social-btn:hover {
+      background: #171717;
+      border-color: #262626;
+      color: #ffffff;
+    }
+    .sec-5-social-btn svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    /* Right Google Partner Badge */
+    .sec-5-partner-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    @media (min-width: 768px) {
+      .sec-5-partner-wrap {
+        align-items: flex-end;
+      }
+    }
+    .sec-5-partner-title {
+      font-size: 11px;
+      color: #737373;
+    }
+    .sec-5-partner-card {
+      background: #0b0b0c;
+      border: 1px solid #1f1f23;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 170px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .sec-5-partner-card:hover {
+      border-color: #3f3f46;
+      background: #111112;
+    }
+    .sec-5-google-logo {
+      width: 1.75rem;
+      height: 1.75rem;
+      margin-bottom: 0.625rem;
+    }
+    .sec-5-partner-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: #d4d4d4;
+    }
+    .sec-5-partner-badge {
+      margin-top: 0.375rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 4px;
+      background: #0a0a0a;
+      border: 1px solid #171717;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    /* Middle Meta row */
+    .sec-5-meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      align-items: center;
+      text-align: center;
+      border-top: 1px solid #171717;
+      padding-top: 2rem;
+      margin-top: 3rem;
+    }
+    @media (min-width: 768px) {
+      .sec-5-meta {
+        grid-template-columns: 1fr 1fr 1fr;
+        text-align: left;
+      }
+    }
+    .sec-5-copyright {
+      font-size: 12px;
+      font-weight: 300;
+      color: #737373;
+      line-height: 1.5;
+    }
+    .sec-5-copyright p {
+      margin: 0;
+    }
+    .sec-5-privacy {
+      display: flex;
+      justify-content: center;
+    }
+    .sec-5-privacy a {
+      color: #737373;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 300;
+      transition: color 0.2s ease;
+    }
+    .sec-5-privacy a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .sec-5-credits {
+      font-size: 12px;
+      font-weight: 300;
+      color: #737373;
+    }
+    @media (min-width: 768px) {
+      .sec-5-credits {
+        text-align: right;
+      }
+    }
+    .sec-5-credit-name {
+      font-weight: 500;
+      transition: color 0.2s ease;
+      cursor: pointer;
+    }
+    .sec-5-credit-name:hover {
+      color: #ffffff;
+    }
+
+    /* Bottom logo row */
+    .sec-5-logo-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      margin-top: 2rem;
+      user-select: none;
+    }
+    .sec-5-massive-logo {
+      font-size: clamp(4rem, 15.5vw, 18rem);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 0.85;
+      letter-spacing: -0.05em;
+      margin: 0;
+      text-align: center;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+    }
+    .sec-5-vor {
+      font-family: "Syne", sans-serif;
+      text-transform: uppercase;
+    }
+    .sec-5-tiq {
+      font-family: "Inter", sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      opacity: 0.95;
+    }
+
+    /* Optional: Visit site overlay badge */
+    .sec-5-visit-badge {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 20;
+      display: none;
+    }
+    @media (min-width: 768px) {
+      .sec-5-visit-badge {
+        display: block;
+      }
+    }
+    .sec-5-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      background: rgba(10, 10, 10, 0.8);
+      border: 1px solid #262626;
+      font-size: 12px;
+      font-weight: 500;
+      color: #d4d4d4;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .sec-5-btn:hover {
+      background: #171717;
+      color: #ffffff;
+      transform: scale(1.03);
+    }
+    .sec-5-arrow-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    /* Section 5 Entry Animations */
+    .sec-5-animate {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .sec-5-animate.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Staggered timings */
+    .sec-5-animate[data-anim="sec5-nav"] {
+      transition-delay: 0.1s;
+    }
+    .sec-5-animate[data-anim="sec5-meta"] {
+      transition-delay: 0.2s;
+    }
+    .sec-5-animate[data-anim="sec5-logo"] {
+      transition-delay: 0.3s;
+      transform: translateY(40px);
+    }
+    .sec-5-animate[data-anim="sec5-logo"].visible {
+      transform: translateY(0);
+    }
+    .sec-5-animate[data-anim="sec5-visit"] {
+      transition-delay: 0.4s;
+    }
   </style>
 </head>
 <body>
@@ -2221,6 +2632,89 @@
     </footer>
   </section>
 
+  <!-- ===== SECTION 5: Vortiq Premium Brand Layout ===== -->
+  <section class="section-5" id="section-5">
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline class="sec-5-video-bg">
+      <source src="sec-5-bg.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- Content Area (Navigation header, Address and Partner Badge, copyright) -->
+    <div class="sec-5-content">
+      <!-- Top Header Row -->
+      <header class="sec-5-header sec-5-animate" data-anim="sec5-nav">
+        <!-- Left: Navigation Links -->
+        <div class="sec-5-nav-links">
+          <span class="sec-5-nav-link active">Home</span>
+          <span class="sec-5-nav-link">About us</span>
+          <span class="sec-5-nav-link">Partnership</span>
+        </div>
+
+        <!-- Middle: Address & Social Links -->
+        <div class="sec-5-center-info">
+          <div class="sec-5-address-wrap">
+            <span class="sec-5-label">Address:</span>
+            <p class="sec-5-address">Vortiq Limited 115B, suite 3, Old Mint Street, Valletta, VLT 1515, Malta</p>
+          </div>
+          <div class="sec-5-socials">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="sec-5-social-btn" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="sec-5-social-btn" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Google Partner Badge Card -->
+        <div class="sec-5-partner-wrap">
+          <span class="sec-5-partner-title">Lead Google Partner in 2026</span>
+          <div class="sec-5-partner-card">
+            <!-- Google colored G logo -->
+            <svg class="sec-5-google-logo" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+            </svg>
+            <span class="sec-5-partner-text">Google Partner</span>
+            <div class="sec-5-partner-badge">Premier 2026</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Middle: Meta info row -->
+      <div class="sec-5-meta sec-5-animate" data-anim="sec5-meta">
+        <div class="sec-5-copyright">
+          <p>©2026 Vortiq.</p>
+          <p>All rights reserved</p>
+        </div>
+        <div class="sec-5-privacy">
+          <a href="/privacy-policy">Privacy Policy</a>
+        </div>
+        <div class="sec-5-credits">
+          <span>Website by <span class="sec-5-credit-name">hx6n</span></span>
+        </div>
+      </div>
+
+      <!-- Bottom: Massive stylized VORtiq logo -->
+      <div class="sec-5-logo-wrap sec-5-animate" data-anim="sec5-logo">
+        <h1 class="sec-5-massive-logo">
+          <span class="sec-5-vor">VOR</span><span class="sec-5-tiq">tiq</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Optional: Visit site overlay badge -->
+    <div class="sec-5-visit-badge sec-5-animate" data-anim="sec5-visit">
+      <a href="/" class="sec-5-btn">
+        <span>Visit site</span>
+        <svg class="sec-5-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+      </a>
+    </div>
+  </section>
+
   <script>
     // ========== SCROLL ANIMATION ENGINE ==========
     class ScrollAnimation {
@@ -2494,6 +2988,19 @@
 
     document.querySelectorAll('[data-anim="sec4-left"], [data-anim="sec4-right"], [data-anim="sec4-footer"]').forEach((el) => {
       sec4Observer.observe(el);
+    });
+
+    // ========== SECTION 5 ENTRY ANIMATION OBSERVER ==========
+    const sec5Observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('[data-anim="sec5-nav"], [data-anim="sec5-meta"], [data-anim="sec5-logo"], [data-anim="sec5-visit"]').forEach((el) => {
+      sec5Observer.observe(el);
     });
 
     init();
