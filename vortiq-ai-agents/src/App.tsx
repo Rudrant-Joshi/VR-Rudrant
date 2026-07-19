@@ -37,8 +37,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 font-sans flex flex-col justify-between overflow-x-hidden relative">
-      {/* Subtle overlay grid for tech alignment feel, kept very clean on plain black */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0a0a0a_1px,transparent_1px),linear-gradient(to_bottom,#0a0a0a_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
+      {/* Fixed VR headset background image matching main page Section 1 */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <img src="./vr-bg.jpg" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
 
       {/* Header Navigation */}
       <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-neutral-900/50 relative z-20">
