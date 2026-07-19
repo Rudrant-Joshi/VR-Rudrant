@@ -172,9 +172,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.8s 0.2s ease-out forwards;
     }
 
     .btn-primary {
@@ -318,6 +315,18 @@
       margin-bottom: 0.5rem;
       padding-left: 1rem;
       border-left: 1px solid rgba(255,255,255,0.2);
+    }
+
+    [data-anim="text-pop"] {
+      opacity: 0;
+      transform: translateY(24px) scale(0.98);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    [data-anim="text-pop"].visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
 
     .feature-card {
@@ -580,14 +589,76 @@
       border-radius: 32px;
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
     }
 
     .pricing-card:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.04);
-      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 45px -15px rgba(255, 255, 255, 0.05);
+    }
+
+    .pricing-card-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        350px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+        rgba(255, 255, 255, 0.06),
+        transparent 80%
+      );
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .pricing-card.popular .pricing-card-glow {
+      background: radial-gradient(
+        350px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+        rgba(249, 115, 22, 0.1),
+        transparent 80%
+      );
+    }
+
+    .pricing-card:hover .pricing-card-glow {
+      opacity: 1;
+    }
+
+    /* Staggered entry classes for pricing */
+    .pricing-anim {
+      opacity: 0;
+      transform: translateY(32px) scale(0.97);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .pricing-anim.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* List hover translate */
+    .pricing-card:hover .plan-features li {
+      transform: translateX(4px);
+    }
+
+    .plan-features li {
+      transition: transform 0.3s ease;
+    }
+
+    .pricing-card:hover .check-icon {
+      stroke: #fff;
+      transform: scale(1.15) rotate(5deg);
+    }
+
+    .pricing-card.popular:hover .check-icon {
+      stroke: #f97316;
+    }
+
+    .check-icon {
+      transition: stroke 0.3s ease, transform 0.3s ease;
     }
 
     .card-inner {
@@ -622,6 +693,13 @@
       font-size: 3rem;
       font-weight: 700;
       letter-spacing: -0.02em;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+      display: inline-block;
+    }
+
+    .plan-price.toggling {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.95);
     }
 
     .plan-period {
@@ -711,6 +789,12 @@
       overflow: visible;
     }
 
+    .pricing-card.popular:hover {
+      border-color: rgba(249, 115, 22, 0.6);
+      box-shadow: 0 0 50px -5px rgba(249, 115, 22, 0.35);
+      transform: translateY(-8px) scale(1.02);
+    }
+
     .popular-glow {
       position: absolute;
       inset: 0;
@@ -753,10 +837,19 @@
       color: #fff;
       border-top: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 4px 12px rgba(249, 115, 22, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .plan-btn:hover {
+      background: #ffffff;
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
     }
 
     .popular-btn:hover {
       background: linear-gradient(to right, #fb923c, #f97316);
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.35);
     }
 
     /* Billing Toggle Footer */
@@ -1976,13 +2069,13 @@
       <div class="hero-content">
         <div>
           <h1>
-            <span>Level up</span>
-            <span>your vision</span>
-            <span class="muted">with future</span>
-            <span class="muted">of VR</span>
+            <span data-anim="text-pop" data-delay="0s">Level up</span>
+            <span data-anim="text-pop" data-delay="0.1s">your vision</span>
+            <span class="muted" data-anim="text-pop" data-delay="0.2s">with future</span>
+            <span class="muted" data-anim="text-pop" data-delay="0.3s">of VR</span>
           </h1>
         </div>
-        <div class="hero-ctas">
+        <div class="hero-ctas" data-anim="text-pop" data-delay="0.4s">
           <a href="./vortiq-ai-agents/dist/index.html" class="btn-primary">Book a Demo</a>
           <a href="./vortiq-ai-agents/dist/index.html" class="btn-secondary">Learn More</a>
         </div>
@@ -1995,7 +2088,7 @@
 
         <!-- Left Column -->
         <div class="cards-column">
-          <div class="column-label">Sovereign Core Architecture</div>
+          <div class="column-label" data-anim="text-pop">Sovereign Core Architecture</div>
 
           <div class="feature-card" data-anim="card">
             <div class="card-icon-wrap">
@@ -2047,7 +2140,7 @@
 
         <!-- Right Column -->
         <div class="cards-column right-col">
-          <div class="column-label">Access & Delivery Matrix</div>
+          <div class="column-label" data-anim="text-pop">Access & Delivery Matrix</div>
 
           <div class="feature-card" data-anim="card">
             <div class="card-icon-wrap">
@@ -2099,7 +2192,7 @@
 
     <!-- Process Chips Section -->
     <section class="chips-section">
-      <div class="column-label" style="align-self: center;">Development & Deployment Lifecycle</div>
+      <div class="column-label" style="align-self: center;" data-anim="text-pop">Development & Deployment Lifecycle</div>
       <div class="chips-wrap">
         <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>Market research</span></div>
         <div class="chip" data-anim="chip"><span class="chip-dot"></span><span>Product design</span></div>
@@ -2123,7 +2216,7 @@
     <div class="pricing-container">
       
       <!-- Page Titles Section -->
-      <div class="pricing-header">
+      <div class="pricing-header pricing-anim" data-delay="0s">
         <div class="billing-promo">
           <svg class="icon-promo" viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           <span>Select Yearly billing to <strong>Save 20%</strong> instantly</span>
@@ -2137,7 +2230,8 @@
       <!-- Pricing Cards Grid -->
       <div class="pricing-grid">
         <!-- FREE PLAN -->
-        <div class="pricing-card" id="card-free">
+        <div class="pricing-card pricing-anim" id="card-free" data-delay="0.1s">
+          <div class="pricing-card-glow"></div>
           <div class="card-inner">
             <div>
               <span class="plan-name">Basic</span>
@@ -2160,7 +2254,8 @@
         </div>
 
         <!-- STANDARD PLAN -->
-        <div class="pricing-card" id="card-standard">
+        <div class="pricing-card pricing-anim" id="card-standard" data-delay="0.2s">
+          <div class="pricing-card-glow"></div>
           <div class="card-inner">
             <div>
               <span class="plan-name">Standard</span>
@@ -2183,8 +2278,9 @@
         </div>
 
         <!-- PRO PLAN -->
-        <div class="pricing-card popular" id="card-pro">
+        <div class="pricing-card popular pricing-anim" id="card-pro" data-delay="0.3s">
           <div class="popular-glow"></div>
+          <div class="pricing-card-glow"></div>
           <div class="popular-badge">
             <svg class="sparkles-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
             Most Popular
@@ -2212,7 +2308,7 @@
       </div>
 
       <!-- Billing Cycle Toggle -->
-      <div class="toggle-footer">
+      <div class="toggle-footer pricing-anim" data-delay="0.4s">
         <div class="toggle-wrap">
           <span class="toggle-label" id="label-monthly">Billed Monthly</span>
           <button class="toggle-track active" id="billing-cycle-toggle" aria-label="Toggle between monthly and yearly billing">
@@ -2242,7 +2338,7 @@
       </a>
       
       <!-- Top-Right Mini Average Revenue Badge -->
-      <div class="cg-rev-badge">
+      <div class="cg-rev-badge" data-anim="text-pop" data-delay="0.1s">
         <div class="cg-rev-val">
           <span class="num">43k</span>
           <span class="symbol">$</span>
@@ -2257,7 +2353,7 @@
       <div class="cg-hero-grid">
         <!-- Main heading -->
         <div>
-          <h1>
+          <h1 data-anim="text-pop">
             We offer next level<br />
             <span class="italic-underline">solutions</span>
           </h1>
@@ -2265,10 +2361,10 @@
 
         <!-- Subtext description -->
         <div>
-          <p class="cg-hero-desc">
+          <p class="cg-hero-desc" data-anim="text-pop" data-delay="0.15s">
             After working with us, your business will achieve the new heights. We will return to you with in-depth analysis, tailored strategies and business problems solved. We transform your problems. After working with us, your business will achieve the new heights.
           </p>
-          <a href="./vortiq-ai-agents/dist/index.html" class="cg-hero-btn">Launch Vortiq</a>
+          <a href="./vortiq-ai-agents/dist/index.html" class="cg-hero-btn" data-anim="text-pop" data-delay="0.25s">Launch Vortiq</a>
         </div>
       </div>
     </header>
@@ -2315,7 +2411,7 @@
 
     <!-- Transition sentence -->
     <section class="cg-transition-sec">
-      <p>AT CG AGENCY, HELPING BUSINESSES TO TACKLE CHALLENGES IS CRUCIAL. WORKING WITH US WILL PROVIDE YOU LONG-TERM GROWTH</p>
+      <p data-anim="text-pop">AT CG AGENCY, HELPING BUSINESSES TO TACKLE CHALLENGES IS CRUCIAL. WORKING WITH US WILL PROVIDE YOU LONG-TERM GROWTH</p>
       <div class="line"></div>
     </section>
 
@@ -2844,6 +2940,13 @@
       observer.observe(el);
     });
 
+    // Scroll-triggered Text Animations (Section 1 & 3)
+    document.querySelectorAll('[data-anim="text-pop"]').forEach((el) => {
+      const delay = el.getAttribute('data-delay') || '0s';
+      el.style.transitionDelay = delay;
+      observer.observe(el);
+    });
+
     // Section 3: CG Agency Layout (Stats Cards) - reset index, make it faster
     document.querySelectorAll('[data-anim="cg-stat"]').forEach((el, i) => {
       el.style.transitionDelay = `${i * 0.04}s`;
@@ -2924,51 +3027,54 @@
     let billingCycle = 'yearly'; // default
 
     function updateBillingDisplay() {
+      // Fade/translate out pricing numbers
+      prices.forEach(price => {
+        price.classList.add('toggling');
+      });
+
       if (billingCycle === 'yearly') {
         toggleBtn.classList.add('active');
         labelMonthly.classList.remove('active');
         labelYearly.classList.add('active');
-        
-        // Show yearly pricing
-        prices.forEach(price => {
-          const val = price.getAttribute('data-yearly');
-          price.textContent = val;
-        });
-
-        // Show yearly billed badges
-        badges.forEach(badge => {
-          if (badge.textContent !== 'Placeholder') {
-            badge.style.opacity = '1';
-            badge.style.pointerEvents = 'auto';
-            badge.style.height = 'auto';
-            badge.style.margin = '0 0 1rem 0';
-            badge.style.padding = '0.25rem 0.625rem';
-            badge.style.border = '1px solid rgba(249, 115, 22, 0.2)';
-          }
-        });
       } else {
         toggleBtn.classList.remove('active');
         labelMonthly.classList.add('active');
         labelYearly.classList.remove('active');
-        
-        // Show monthly pricing
+      }
+
+      setTimeout(() => {
+        // Change pricing text
         prices.forEach(price => {
-          const val = price.getAttribute('data-monthly');
+          const val = billingCycle === 'yearly' ? price.getAttribute('data-yearly') : price.getAttribute('data-monthly');
           price.textContent = val;
         });
 
-        // Hide yearly billed badges
+        // Toggle yearly badges
         badges.forEach(badge => {
           if (badge.textContent !== 'Placeholder') {
-            badge.style.opacity = '0';
-            badge.style.pointerEvents = 'none';
-            badge.style.height = '0';
-            badge.style.margin = '0';
-            badge.style.padding = '0';
-            badge.style.border = 'none';
+            if (billingCycle === 'yearly') {
+              badge.style.opacity = '1';
+              badge.style.pointerEvents = 'auto';
+              badge.style.height = 'auto';
+              badge.style.margin = '0 0 1rem 0';
+              badge.style.padding = '0.25rem 0.625rem';
+              badge.style.border = '1px solid rgba(249, 115, 22, 0.2)';
+            } else {
+              badge.style.opacity = '0';
+              badge.style.pointerEvents = 'none';
+              badge.style.height = '0';
+              badge.style.margin = '0';
+              badge.style.padding = '0';
+              badge.style.border = 'none';
+            }
           }
         });
-      }
+
+        // Fade/translate back in
+        prices.forEach(price => {
+          price.classList.remove('toggling');
+        });
+      }, 150);
     }
 
     if (toggleBtn) {
@@ -2977,6 +3083,32 @@
         updateBillingDisplay();
       });
     }
+
+    // Modern Hover Mouse-Glow effect for pricing cards
+    document.querySelectorAll('.pricing-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // ========== SECTION 2 (Pricing) ENTRY ANIMATION OBSERVER ==========
+    const pricingObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.pricing-anim').forEach((el) => {
+      const delay = el.getAttribute('data-delay') || '0s';
+      el.style.transitionDelay = delay;
+      pricingObserver.observe(el);
+    });
 
     // ========== SECTION 4 ENTRY ANIMATION OBSERVER ==========
     const sec4Observer = new IntersectionObserver((entries) => {
